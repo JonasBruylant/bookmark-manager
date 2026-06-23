@@ -1,122 +1,35 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState, useEffect } from 'react' /* useState is for storing and updating data while useEffect is for running code at specific moments*/
+import { supabase } from './supabaseClient' /**/
 
-function App() {
-  const [count, setCount] = useState(0)
+function App() 
+{
+  const [bookmarks, setBookmarks] = useState([])
 
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+  /*This effectively makes useEffect a lambda, this will be called whenever I need to update something at runtime.*/
+  /*The empty array makes it so that the fetBookmarks is called once.*/
+  useEffect(() => 
+  {
+    fetchBookmarks()
+  }, [])
 
-      <div className="ticks"></div>
+  async function fetchBookmarks()
+  {
+    const {data, error} = await supabase
+        .from('bookmarks')
+        .select('*, collections(*), bookmark_tags(*, tags(*))')
+        .order('created_at', {ascending: false})
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+    if (error) console.error(error)
+    else setBookmarks(data)
+  }
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+  return(
+      /*<div className="min-h-screen bg-[#07162E]">*/
+      <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-200 to-blue-500 p-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">Bookmarks</h1>
+        <pre>{JSON.stringify(bookmarks, null, 2)}</pre>
+      </div>
   )
+  
 }
-
 export default App
