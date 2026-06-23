@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import {supabase } from './supabaseClient'
-
+import { supabase } from './supabaseClient'
 function BookmarkForm({collections, tags, onBookmarkAdded})
 {
     const [title, setTitle] = useState('')
@@ -19,7 +18,14 @@ function BookmarkForm({collections, tags, onBookmarkAdded})
             .select()
             .single()
         
-        if (error) { console.error(error); return }
+        if (error) 
+        {
+            if (error.code === '23505')
+                alert('This URL has already been bookmarked!')
+            else
+                console.error(error); 
+            return 
+        }
         
         if(selectedTags.length > 0)
         {
@@ -64,3 +70,5 @@ function BookmarkForm({collections, tags, onBookmarkAdded})
         </form>
     )
 }
+
+export default BookmarkForm
